@@ -6,28 +6,23 @@ import { Layer } from "effect";
 import { FooHandler } from "./handlers.js";
 import { FooGroup } from "./request.js";
 
-const Main = Layer.empty.pipe(
-  Layer.provide(
-    RpcServer.layerHttpRouter({
-      group: FooGroup,
-      path: "/rpc/http",
-      protocol: "http",
-    })
-  ),
-  Layer.provide(
-    RpcServer.layerHttpRouter({
-      group: FooGroup,
-      path: "/rpc/http2",
-      protocol: "http",
-    })
-  ),
-  Layer.provide(
-    RpcServer.layerHttpRouter({
-      group: FooGroup,
-      path: "/rpc/socket",
-      protocol: "websocket",
-    })
-  ),
+const Main = Layer.mergeAll(
+  RpcServer.layerHttpRouter({
+    group: FooGroup,
+    path: "/rpc/http",
+    protocol: "http",
+  }),
+  RpcServer.layerHttpRouter({
+    group: FooGroup,
+    path: "/rpc/http2",
+    protocol: "http",
+  }),
+  RpcServer.layerHttpRouter({
+    group: FooGroup,
+    path: "/rpc/socket",
+    protocol: "websocket",
+  })
+).pipe(
   Layer.provide(RpcSerialization.layerJson),
   Layer.provide(FooHandler),
   HttpLayerRouter.serve,

@@ -4,41 +4,38 @@ import { Console, Effect, Layer } from "effect";
 import { FooGroup } from "./request.js";
 import { NodeRuntime } from "@effect/platform-node";
 
-const makeOne = RpcClient.make(FooGroup).pipe(
-  Effect.provide(
-    RpcClient.layerProtocolHttp({
-      url: `http://localhost:3000/rpc/http`,
-    }).pipe(Layer.provide([FetchHttpClient.layer, RpcSerialization.layerJson]))
-  )
-);
+class HttpClientA extends Effect.Service<HttpClientA>()("HttpClientA", {
+  scoped: RpcClient.make(FooGroup),
+  dependencies: [RpcClient.layerProtocolHttp({
+    url: `http://localhost:3000/rpc/http`,
+  }).pipe(Layer.provide([FetchHttpClient.layer, RpcSerialization.layerJson]))],
+}) {}
 
-const makeTwoHttp = RpcClient.make(FooGroup).pipe(
-  Effect.provide(
-    RpcClient.layerProtocolHttp({
-      url: `http://localhost:3000/rpc/http2`,
-    }).pipe(Layer.provide([FetchHttpClient.layer, RpcSerialization.layerJson]))
-  )
-);
+class HttpClientB extends Effect.Service<HttpClientB>()("HttpClientB", {
+  scoped: RpcClient.make(FooGroup),
+  dependencies: [RpcClient.layerProtocolHttp({
+    url: `http://localhost:3000/rpc/http2`,
+  }).pipe(Layer.provide([FetchHttpClient.layer, RpcSerialization.layerJson]))],
+}) {}
 
-const makeTwoSocket = RpcClient.make(FooGroup).pipe(
-  Effect.provide(
-    RpcClient.layerProtocolSocket({
-      retryTransientErrors: true,
-    }).pipe(
-      Layer.provide([
-        RpcSerialization.layerJson,
-        Socket.layerWebSocket(`ws://localhost:3000/rpc/socket`).pipe(
-          Layer.provide(Socket.layerWebSocketConstructorGlobal)
-        ),
-      ])
-    )
-  )
-);
+class HttpClientSocket extends Effect.Service<HttpClientSocket>()("HttpClientSocket", {
+  scoped: RpcClient.make(FooGroup),
+  dependencies: [RpcClient.layerProtocolSocket({
+    retryTransientErrors: true,
+  }).pipe(
+    Layer.provide([
+      RpcSerialization.layerJson,
+      Socket.layerWebSocket(`ws://localhost:3000/rpc/socket`).pipe(
+        Layer.provide(Socket.layerWebSocketConstructorGlobal)
+      ),
+    ])
+  )],
+}) {}
 
 const program = Effect.gen(function* () {
-  const one = yield* makeOne;
-  const twoHttp = yield* makeTwoHttp;
-  const twoSocket = yield* makeTwoSocket;
+  const one = yield* HttpClientA
+  const twoHttp = yield* HttpClientB
+  const twoSocket = yield* HttpClientSocket
   const client = {
     one,
     twoHttp,
@@ -56,6 +53,6 @@ const program = Effect.gen(function* () {
   yield* client.twoSocket
     .Foo()
     .pipe(Effect.andThen(Console.log), Effect.ignoreLogged);
-}).pipe(Effect.scoped);
+}).pipe(Effect.provide([HttpClientA.Default, HttpClientB.Default, HttpClientSocket.Default]));
 
 NodeRuntime.runMain(program);
