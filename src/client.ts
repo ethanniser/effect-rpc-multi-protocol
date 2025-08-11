@@ -34,10 +34,10 @@ const program = Effect.gen(function* () {
     one,
     two,
   } as const;
-  const oneResult = yield* client.one
+  yield* client.one
     .Foo()
     .pipe(Effect.andThen(Console.log), Effect.ignoreLogged);
-  const twoResult = yield* client.two
+  yield* client.two
     .Foo()
     .pipe(Effect.andThen(Console.log), Effect.ignoreLogged);
 }).pipe(Effect.scoped);
