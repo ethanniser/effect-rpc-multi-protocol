@@ -1,15 +1,4 @@
-# effect-rpc
+effect rpc socket bug
 
-To install dependencies:
-
-```bash
-bun install
-```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.2.12. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+run `src/server.ts`
+run `src/client.ts`

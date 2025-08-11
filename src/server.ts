@@ -15,15 +15,17 @@ const Main = Layer.empty.pipe(
     })
   ),
   Layer.provide(
-    // RpcServer.layerHttpRouter({
-    //   group: FooGroup,
-    //   path: "/rpc/socket",
-    //   protocol: "websocket",
-    // })
     RpcServer.layerHttpRouter({
       group: FooGroup,
       path: "/rpc/http2",
       protocol: "http",
+    })
+  ),
+  Layer.provide(
+    RpcServer.layerHttpRouter({
+      group: FooGroup,
+      path: "/rpc/socket",
+      protocol: "websocket",
     })
   ),
   Layer.provide(RpcSerialization.layerJson),
