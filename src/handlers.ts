@@ -1,18 +1,10 @@
 import { Effect } from "effect";
-import { OneRpcs, TwoRpcs } from "./request.js";
+import { FooGroup } from "./request.js";
 
-export const OneHandler = OneRpcs.toLayer(
+export const FooHandler = FooGroup.toLayer(
   Effect.gen(function* () {
     return {
       Foo: () => Effect.succeed("from one"),
-    };
-  })
-);
-
-export const TwoHandler = TwoRpcs.toLayer(
-  Effect.gen(function* () {
-    return {
-      Foo: () => Effect.succeed("from two"),
     };
   })
 );

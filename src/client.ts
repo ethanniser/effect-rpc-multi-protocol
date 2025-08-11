@@ -1,10 +1,10 @@
 import { FetchHttpClient, Socket } from "@effect/platform";
 import { RpcClient, RpcSerialization } from "@effect/rpc";
 import { Console, Effect, Layer } from "effect";
-import { OneRpcs, TwoRpcs } from "./request.js";
+import { FooGroup } from "./request.js";
 import { NodeRuntime } from "@effect/platform-node";
 
-const makeOne = RpcClient.make(OneRpcs).pipe(
+const makeOne = RpcClient.make(FooGroup).pipe(
   Effect.provide(
     RpcClient.layerProtocolHttp({
       url: `http://localhost:3000/rpc/http`,
@@ -12,7 +12,7 @@ const makeOne = RpcClient.make(OneRpcs).pipe(
   )
 );
 
-const makeTwo = RpcClient.make(TwoRpcs).pipe(
+const makeTwo = RpcClient.make(FooGroup).pipe(
   Effect.provide(
     RpcClient.layerProtocolSocket({
       retryTransientErrors: true,
