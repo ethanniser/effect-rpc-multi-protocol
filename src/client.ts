@@ -14,16 +14,19 @@ const makeOne = RpcClient.make(FooGroup).pipe(
 
 const makeTwo = RpcClient.make(FooGroup).pipe(
   Effect.provide(
-    RpcClient.layerProtocolSocket({
-      retryTransientErrors: true,
-    }).pipe(
-      Layer.provide([
-        RpcSerialization.layerJson,
-        Socket.layerWebSocket(`ws://localhost:3000/rpc/socket`).pipe(
-          Layer.provide(Socket.layerWebSocketConstructorGlobal)
-        ),
-      ])
-    )
+    // RpcClient.layerProtocolSocket({
+    //   retryTransientErrors: true,
+    // }).pipe(
+    //   Layer.provide([
+    //     RpcSerialization.layerJson,
+    //     Socket.layerWebSocket(`ws://localhost:3000/rpc/socket`).pipe(
+    //       Layer.provide(Socket.layerWebSocketConstructorGlobal)
+    //     ),
+    //   ])
+    // )
+    RpcClient.layerProtocolHttp({
+      url: `http://localhost:3000/rpc/http2`,
+    }).pipe(Layer.provide([FetchHttpClient.layer, RpcSerialization.layerJson]))
   )
 );
 
